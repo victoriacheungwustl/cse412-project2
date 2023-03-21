@@ -83,7 +83,9 @@ class ReflexAgent(Agent):
         #print (newGhostStates)
         #print (newScaredTimes)
 
-        score = currentGameState.getScore()
+       # score = currentGameState.getScore()
+        score = successorGameState.getScore()
+
        #manhattan distance between pacman agent and the nearest food (the closer, the better it is)
        #for loop to calculate distance
        #So you can use the min of currentPacmanPosition from food Manhattan distance compare to the min of newPos to food. If the min of currentPacmanPosition one is larger then score +=1 something like that
@@ -92,16 +94,13 @@ class ReflexAgent(Agent):
         distanceToFoods = []
 
         for foodPos in listOfFoods:
-            distanceToFoods.append(manhattanDistance(newPos, foodPos)) #find min in list and compare to smallest one from
-
-        print(distanceToFoods) 
+            distanceToFoods.append(manhattanDistance(newPos, foodPos)) #find min in list and compare to smallest one fro
         
 
         currFoodDists = [] 
         for foodPos in listOfFoods:
             currFoodDists.append(manhattanDistance(currentGameState.getPacmanPosition(), foodPos))
 
-        print(currFoodDists)
 
         if len(distanceToFoods) > 0 and len(currFoodDists) > 0:
             if min(distanceToFoods) < min(currFoodDists): #if closer to food
@@ -146,8 +145,6 @@ class ReflexAgent(Agent):
         for ghost in newGhostStates:
             if ghost.getPosition() == newPos: 
                 score = float('-inf')
-
-        
 
         return score
 
