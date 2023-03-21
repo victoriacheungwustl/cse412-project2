@@ -49,6 +49,9 @@ class ReflexAgent(Agent):
 
         "Add more of your code here if you want to"
 
+        #change chosenIndex? 
+
+
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState, action):
@@ -74,7 +77,79 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        #print(successorGameState)
+        #print(newPos) - returns x and y coordinates of pacman in form (a,b)
+        #print (newFood.asList()) -returns list of x and y coordinates of food pellets remaining in form [(a,b), (c,d), ...]
+        #print (newGhostStates)
+        #print (newScaredTimes)
+
+        score = currentGameState.getScore()
+       #manhattan distance between pacman agent and the nearest food (the closer, the better it is)
+       #for loop to calculate distance
+       #So you can use the min of currentPacmanPosition from food Manhattan distance compare to the min of newPos to food. If the min of currentPacmanPosition one is larger then score +=1 something like that
+      
+        listOfFoods = newFood.asList()
+        distanceToFoods = []
+
+        for foodPos in listOfFoods:
+            distanceToFoods.append(manhattanDistance(newPos, foodPos)) #find min in list and compare to smallest one from
+
+        print(distanceToFoods) 
+        
+
+        currFoodDists = [] 
+        for foodPos in listOfFoods:
+            currFoodDists.append(manhattanDistance(currentGameState.getPacmanPosition(), foodPos))
+
+        print(currFoodDists)
+
+        if len(distanceToFoods) > 0 and len(currFoodDists) > 0:
+            if min(distanceToFoods) < min(currFoodDists): #if closer to food
+             score += 1
+            #else:
+            #    score -= 1
+
+
+        #Or simply you can use manhattanDistance(food, newPos) for food in currentGameState.getFood().asList() something like this and define your score by that
+        #score = manhattanDistance(food, newPos) for food in currentGameState.getFood().asList()
+
+       
+       #calculate distance between pacman agent and the ghost (the further, the better it is)
+       #for loop 
+        succ_ghost_distances = []
+        curr_ghost_distances = []
+
+
+        for ghost in successorGameState.getGhostPositions():
+            succ_ghost_distances.append(manhattanDistance(ghost,newPos))
+
+        for ghost in currentGameState.getGhostPositions():
+            curr_ghost_distances.append(manhattanDistance(ghost, currentGameState.getPacmanPosition()))
+        
+
+        if len(succ_ghost_distances) < 0 and len(curr_ghost_distances) > 0:
+            #if ghosts are scared lesser distance to ghosts is better
+            if(sum(newScaredTimes) > 0): 
+                 if min(succ_ghost_distances) < min(curr_ghost_distances): #if closer to ghost then its good
+                  score += 1
+                # else:
+                #  score -= 1
+
+            #if ghosts are not scared then greater distance to ghosts is better 
+            else: 
+                if min(succ_ghost_distances) < min(curr_ghost_distances): #if closer to ghost then its bad
+                  score -= 1
+               # else:
+               #   score += 2
+
+        #if pacman in same position as ghost, set it to negative infinity 
+        for ghost in newGhostStates:
+            if ghost.getPosition() == newPos: 
+                score = float('-inf')
+
+        
+
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
