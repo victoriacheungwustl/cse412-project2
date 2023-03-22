@@ -84,7 +84,7 @@ class ReflexAgent(Agent):
         #print (newScaredTimes)
 
        # score = currentGameState.getScore()
-        score = successorGameState.getScore()
+        score = successorGameState.getScore() / 10 
 
        #manhattan distance between pacman agent and the nearest food (the closer, the better it is)
        #for loop to calculate distance
@@ -122,11 +122,11 @@ class ReflexAgent(Agent):
         for ghost in successorGameState.getGhostPositions():
             succ_ghost_distances.append(manhattanDistance(ghost,newPos))
 
-        for ghost in currentGameState.getGhostPositions():
-            curr_ghost_distances.append(manhattanDistance(ghost, currentGameState.getPacmanPosition()))
+        for ghost in currentGameState.getGhostPositions(): 
+             curr_ghost_distances.append(manhattanDistance(ghost, currentGameState.getPacmanPosition()))
         
 
-        if len(succ_ghost_distances) < 0 and len(curr_ghost_distances) > 0:
+        if len(succ_ghost_distances) > 0 and len(curr_ghost_distances) > 0:
             #if ghosts are scared lesser distance to ghosts is better
             if(sum(newScaredTimes) > 0): 
                  if min(succ_ghost_distances) < min(curr_ghost_distances): #if closer to ghost then its good
