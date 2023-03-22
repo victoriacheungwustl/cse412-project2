@@ -80,41 +80,30 @@ class ReflexAgent(Agent):
         #print(successorGameState)
         #print(newPos) - returns x and y coordinates of pacman in form (a,b)
         #print (newFood.asList()) -returns list of x and y coordinates of food pellets remaining in form [(a,b), (c,d), ...]
-        #print (newGhostStates)
-        #print (newScaredTimes)
 
-       # score = currentGameState.getScore()
         score = successorGameState.getScore() / 10 
 
        #manhattan distance between pacman agent and the nearest food (the closer, the better it is)
-       #for loop to calculate distance
-       #So you can use the min of currentPacmanPosition from food Manhattan distance compare to the min of newPos to food. If the min of currentPacmanPosition one is larger then score +=1 something like that
       
         listOfFoods = newFood.asList()
+        #successor pacman distance to foods
         distanceToFoods = []
-
         for foodPos in listOfFoods:
             distanceToFoods.append(manhattanDistance(newPos, foodPos)) #find min in list and compare to smallest one fro
         
-
+        #current pacman distance to foods
         currFoodDists = [] 
         for foodPos in listOfFoods:
             currFoodDists.append(manhattanDistance(currentGameState.getPacmanPosition(), foodPos))
 
 
         if len(distanceToFoods) > 0 and len(currFoodDists) > 0:
-            if min(distanceToFoods) < min(currFoodDists): #if closer to food
+            if min(distanceToFoods) < min(currFoodDists): #if closer to food, then its good
              score += 1
-            #else:
-            #    score -= 1
-
-
-        #Or simply you can use manhattanDistance(food, newPos) for food in currentGameState.getFood().asList() something like this and define your score by that
-        #score = manhattanDistance(food, newPos) for food in currentGameState.getFood().asList()
 
        
        #calculate distance between pacman agent and the ghost (the further, the better it is)
-       #for loop 
+
         succ_ghost_distances = []
         curr_ghost_distances = []
 
@@ -131,16 +120,12 @@ class ReflexAgent(Agent):
             if(sum(newScaredTimes) > 0): 
                  if min(succ_ghost_distances) < min(curr_ghost_distances): #if closer to ghost then its good
                   score += 1
-                # else:
-                #  score -= 1
 
             #if ghosts are not scared then greater distance to ghosts is better 
             else: 
                 if min(succ_ghost_distances) < min(curr_ghost_distances): #if closer to ghost then its bad
                   score -= 1
-               # else:
-               #   score += 2
-
+             
         #if pacman in same position as ghost, set it to negative infinity 
         for ghost in newGhostStates:
             if ghost.getPosition() == newPos: 
