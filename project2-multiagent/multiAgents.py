@@ -192,7 +192,53 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+       # util.raiseNotDefined()
+
+        numGhosts = gameState.getNumAgents() -1
+
+        #for GHOSTS (agentIndex >= 1)
+        def minState(gameState, depth, agentIndex): #dont have to keep track of depth
+            #check all of the ghost indexes
+
+            minVal = 99999
+            if gameState.isWin() or gameState.isLose(): 
+                return self.evaluationFunction(gameState)
+            for action in gameState.getLegalActions(agentIndex):  #legal actions for pacman
+                successorGameState = gameState.generateSuccessor(agentIndex, action) #####ERROR
+                if agentIndex == numGhosts: #agentindex is the last one 
+                    minVal = min(minVal, maxState(successorGameState, depth))
+                else:
+                    minVal = min(minVal, minState(successorGameState, depth, agentIndex+ 1))
+
+            return minVal
+
+
+        #for PACMAN (agentIndex = 0)
+        def maxState(gameState, depth): #agentindex will always be zero so no need for agentindex
+            #check depth 
+             currDepth = depth + 1
+             #base case
+             if gameState.isWin() or gameState.isLose() or currDepth==self.depth: 
+                return self.evaluationFunction(gameState)
+             maxVal = -99999
+             for action in gameState.getLegalActions(0):  #legal actions for pacman
+                successorGameState = gameState.generateSuccessor(0, action)
+                maxVal = max(maxVal, minState(successorGameState, currDepth, 1))
+             return maxVal
+
+       #getAction code 
+        legalActions = gameState.getLegalActions(0) 
+        bestScore = -9999
+        bestAction = ''
+        for action in legalActions:
+            #find the next state
+            nextGameState = gameState.generateSuccessor(0, action)
+            currScore = minState(nextGameState, 0, 1) #####ERROR
+            if currScore > bestScore:
+                bestScore = currScore
+                bestAction = action
+        return bestAction
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
