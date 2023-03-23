@@ -319,14 +319,48 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
 
     def getAction(self, gameState):
-        """
-        Returns the expectimax action using self.depth and self.evaluationFunction
+        numGhosts = gameState.getNumAgents() -1
 
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #for GHOSTS (agentIndex >= 1)
+        def expectiMax(gameState, depth, agentIndex): #dont have to keep track of depth
+            #check all of the ghost indexes
+            curVal = 0
+            exVal = 0
+            if gameState.isWin() or gameState.isLose(): 
+                return self.evaluationFunction(gameState)
+            for action in gameState.getLegalActions(agentIndex):  #legal actions for pacman
+                successorGameState = gameState.generateSuccessor(agentIndex, action) 
+                if agentIndex == numGhosts: #agentindex is the last one 
+                    curVal = maxState(successorGameState, maxState(successorGameState, depth))
+                else:
+                    curVal = expectiMax(successorGameState, expectiMax(successorGameState, depth, agentIndex+ 1))
+                    exVal += curVal
+            return exVal
+
+
+        def maxState(gameState, depth): #agentindex will always be zero so no need for agentindex
+             currDepth = depth + 1
+             #base case
+             if gameState.isWin() or gameState.isLose() or currDepth==self.depth: 
+                return self.evaluationFunction(gameState)
+             maxVal = -99999
+             for action in gameState.getLegalActions(0):  #legal actions for pacman
+                successorGameState = gameState.generateSuccessor(0, action)
+                maxVal = max(maxVal, expectiMax(successorGameState, currDepth, 1))
+             return maxVal
+
+       #getAction code 
+        legalActions = gameState.getLegalActions(0) 
+        bestScore = -9999
+        bestAction = ''
+        for action in legalActions:
+            #find the next state
+            nextGameState = gameState.generateSuccessor(0, action)
+            currScore = expectiMax(nextGameState, 0, 1) 
+            if currScore > bestScore:
+                bestScore = currScore
+                bestAction = action
+        return bestAction
 
 def betterEvaluationFunction(currentGameState):
     """
