@@ -328,14 +328,18 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             exVal = 0
             if gameState.isWin() or gameState.isLose(): 
                 return self.evaluationFunction(gameState)
+            
+            numberofactions = 0
             for action in gameState.getLegalActions(agentIndex):  #legal actions for pacman
+                numberofactions = numberofactions+1
                 successorGameState = gameState.generateSuccessor(agentIndex, action) 
                 if agentIndex == numGhosts: #agentindex is the last one 
-                    curVal = maxState(successorGameState, maxState(successorGameState, depth))
+                    curVal = maxState(successorGameState, depth)
                 else:
-                    curVal = expectiMax(successorGameState, expectiMax(successorGameState, depth, agentIndex+ 1))
-                    exVal += curVal
-            return exVal
+                    curVal = expectiMax(successorGameState, depth, agentIndex + 1)
+                exVal += curVal
+            
+            return exVal/numberofactions
 
 
         def maxState(gameState, depth): #agentindex will always be zero so no need for agentindex
