@@ -374,8 +374,46 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    #successorGameState = currentGameState.generatePacmanSuccessor(action)
+    newFood = currentGameState.getFood()
+    newCapsules = currentGameState.getCapsules()
+    "*** YOUR CODE HERE ***"
+    score = currentGameState.getScore()
+
+       #manhattan distance between pacman agent and the nearest food (the closer, the better it is)
+      
+    listOfFoods = newFood.asList()
+    listOfPellets = newCapsules
+        #successor pacman distance to foods
     
-    util.raiseNotDefined()
+        #current pacman distance to foods
+    currFoodDists = [] 
+    for foodPos in listOfFoods:
+        currFoodDists.append(manhattanDistance(currentGameState.getPacmanPosition(), foodPos))
+
+    currPelletDists = []
+    for pelletPos in listOfPellets:
+        currPelletDists.append((manhattanDistance(currentGameState.getPacmanPosition(), pelletPos))
+)
+    totalFoodDists = 0
+    filteredFoodDists = 0
+    totalPelletDists = 0
+    filteredPelletDists = 0
+    
+    if len(currFoodDists) > 0:
+        for food in currFoodDists:
+            totalFoodDists = totalFoodDists + food
+    if(totalFoodDists > 0):
+        filteredFoodDists = 10/totalFoodDists
+
+    if len(currPelletDists) > 0:
+        for pellet in currPelletDists:
+            totalPelletDists = totalPelletDists + pellet
+    if(totalPelletDists > 0):
+        filteredPelletDists = 150/totalPelletDists
+    score += filteredFoodDists
+    score += filteredPelletDists
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
