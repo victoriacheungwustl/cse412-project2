@@ -258,16 +258,21 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         def minState(gameState, depth, agentIndex, alpha, beta): #dont have to keep track of depth
             #check all of the ghost indexes
-
             minVal = 9999
             if gameState.isWin() or gameState.isLose(): 
                 return self.evaluationFunction(gameState)
             for action in gameState.getLegalActions(agentIndex):  #legal actions for pacman
                 successorGameState = gameState.generateSuccessor(agentIndex, action) 
                 if agentIndex == numGhosts: #agentindex is the last one 
-                    minVal = min(minVal, maxState(successorGameState, depth))
+                    minVal = min(minVal, maxState(successorGameState, depth, alpha, beta))
+                    if minVal < alpha:
+                        return minVal
+                    beta = min(beta, minVal)
                 else:
-                    minVal = min(minVal, minState(successorGameState, depth, agentIndex+ 1))
+                    minVal = min(minVal, minState(successorGameState, depth, agentIndex+ 1, alpha, beta))
+                    if minVal < alpha:
+                        return minVal
+                    beta = min(beta, minVal)
 
             return minVal
 
@@ -278,26 +283,30 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 
         def maxState(gameState, depth, alpha, beta): #agentindex will always be zero so no need for agentindex
+        
             #check depth 
-             currDepth = depth + 1
+            currDepth = depth + 1
              #base case
-             if gameState.isWin() or gameState.isLose() or currDepth==self.depth: 
+            if gameState.isWin() or gameState.isLose() or currDepth==self.depth: 
                 return self.evaluationFunction(gameState)
-             maxVal = -99999
-             for action in gameState.getLegalActions(0):  #legal actions for pacman
+            maxVal = -99999
+            for action in gameState.getLegalActions(0):  #legal actions for pacman
                 successorGameState = gameState.generateSuccessor(0, action)
-                maxVal = max(maxVal, minState(successorGameState, currDepth, 1))
-             return maxVal
+                maxVal = max(maxVal, minState(successorGameState, currDepth, 1, alpha, beta))
+                if maxVal > beta: 
+                    return maxVal
+                alpha = max(alpha, maxVal)
+            return maxVal
 
        #getAction code (root) -- DONE
         alphaVal = -9999
         betaVal = 9999
 
-        legalActions = gameState.getLegalActions(0) 
+       
         bestScore = -9999
         bestAction = ''
         
-        for action in legalActions:
+        for action in gameState.getLegalActions(0):
             #find the next state
             nextGameState = gameState.generateSuccessor(0, action)
             currScore = minState(nextGameState, 0, 1, alphaVal, betaVal) 
@@ -308,7 +317,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if currScore > betaVal: 
                 return bestAction
                 
-        alphaVal = max(alphaVal, currScore)
+            alphaVal = max(alphaVal, currScore)
+
         return bestAction
 
 
@@ -401,12 +411,14 @@ def betterEvaluationFunction(currentGameState):
     filteredPelletDists = 0
     
     if len(currFoodDists) > 0:
-        for food in currFoodDists:
-            totalFoodDists = totalFoodDists + food
+        #get sum of all fooddists
+        for food in currFoodDists: 
+            totalFoodDists = totalFoodDists + food 
     if(totalFoodDists > 0):
         filteredFoodDists = 10/totalFoodDists
 
     if len(currPelletDists) > 0:
+        #get sum of all pelletdists 
         for pellet in currPelletDists:
             totalPelletDists = totalPelletDists + pellet
     if(totalPelletDists > 0):
